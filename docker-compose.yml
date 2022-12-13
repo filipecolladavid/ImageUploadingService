@@ -1,0 +1,23 @@
+services:
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data:/data
+    environment:
+      - "MINIO_ROOT_USER=minio"
+      - "MINIO_ROOT_PASSWORD=minio123"
+    command: server --console-address ":9001" /data
+
+  backend:
+    build: ./backend
+    container_name: backend_api
+    command: uvicorn main:app --host 0.0.0.0 --port 80 --reload
+    ports:
+      - 8000:80
+    volumes:
+      - ./backend:/app
+
