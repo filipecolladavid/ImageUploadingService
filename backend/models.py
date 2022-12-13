@@ -50,9 +50,9 @@ class UpdatePost(BaseModel):
         json_encoders = {ObjectId: str}
         schema_extra = {
             "example": {
-                "name": "Jane Doe",
-                "email": "jdoe@example.com",
-                "course": "Experiments, Science, and Fashion in Nanophotonics",
-                "gpa": "3.0",
+                "title": "My Picture",
+                "description": "Picture taken at Lake with Ducks",
+                "src": "src/bucket/media",
+                "date": "1/1/2000"
             }
         }

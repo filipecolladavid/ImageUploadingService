@@ -1,10 +1,7 @@
-from pymongo import mongo_client
-import pymongo
+import motor.motor_asyncio
 from config import settings
 
-client = mongo_client.MongoClient(settings.DATABASE_URL)
+client = motor.motor_asyncio.AsyncIOMotorClient(settings.DATABASE_URL)
 print('Connected to MongoDB...')
 
 db = client[settings.MONGO_INITDB_DATABASE]
-Post = db.posts
-Post.create_index([("title", pymongo.ASCENDING)], unique=True)

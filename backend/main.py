@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI, UploadFile, status
+from typing import List
+from fastapi import Body, FastAPI, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from minio import InvalidResponseError
@@ -21,7 +22,7 @@ baseUrl = "http://127.0.0.1:9000/"
 
 
 @app.post("/upload")
-def upload(image: UploadFile, title: str = "Image", desc: str = "No Description Available", date: str = "1/1/2000"):
+async def upload(image: UploadFile, title: str = "Image", desc: str = "No Description Available", date: str = "1/1/2000"):
 
     file_size = os.fstat(image.file.fileno()).st_size
     file_name = title+(date.replace("/","_"))
@@ -39,22 +40,40 @@ def upload(image: UploadFile, title: str = "Image", desc: str = "No Description 
     )
 
     json_post = jsonable_encoder(post)
-    new_student = db[settings.MONGO_INITDB_DATABASE].insert_one(json_post)
-    created_student = db[settings.MONGO_INITDB_DATABASE].find_one({"_id": new_student.inserted_id})
+    new_post = await db[settings.MONGO_INITDB_DATABASE].insert_one(json_post)
+    created_post = await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": new_post.inserted_id})
     
 
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_student)
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_post)
 
-@app.get("/images")
-def get_image_urls():
-    try:
-        objects = minio_client.list_objects(bucket, recursive=True)
-        image_urls = []
-        for obj in objects:
-            image_url = minio_client.presigned_get_object(
-                bucket, obj.object_name)
-            image_urls.append(image_url.split(
-                "?")[0].replace("minio", "127.0.0.1"))
-        return {"image_urls": image_urls}
-    except InvalidResponseError as err:
-        return {"message": err.message}
+@app.get("/images", response_description="List all images", response_model = List[Post])
+async def get_image_urls():
+    posts = await db[settings.MONGO_INITDB_DATABASE].find().to_list(1000)
+    return posts
+
+@app.put("/{id}", response_description="Update a post", response_model=Post)
+async def update_post(id: str, post: UpdatePost = Body(...)):
+    post = {k: v for k, v in post.dict().items() if v is not None}
+
+    if len(post) >= 1:
+        update_result = await db[settings.MONGO_INITDB_DATABASE].update_one({"_id": id}, {"$set": post})
+
+        if update_result.modified_count == 1:
+            if (
+                updated_post := await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})
+            ) is not None:
+                return updated_post
+
+    if (existing_post := await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})) is not None:
+        return existing_post
+
+    raise HTTPException(status_code=404, detail=f"Post {id} not found")
+
+@app.delete("/{id}", response_description="Delete a post")
+async def delete_post(id: str)
+    delete_result = await db[settings.MONGO_INITDB_DATABASE].delete_one({"_id": id})
+
+    if delete_result.deleted.count == 1:
+        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT)
+    
+    raise HTTPException(status_code=404, detail=f"Post {id} not found")
