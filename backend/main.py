@@ -1,6 +1,7 @@
 import json, os
 from fastapi import FastAPI, UploadFile
 from minio import Minio, InvalidResponseError
+from urllib import parse
 
 app = FastAPI()
 
@@ -48,8 +49,23 @@ def get_root():
 def upload(image: UploadFile, name: str = "Image", desc: str = "No Description Available"):
     file_size = os.fstat(image.file.fileno()).st_size
     try:
-        minio_client.put_object(bucket, "test.png", image.file, file_size, image.content_type)
-        publicUrl = "https://minio:9000"+"/"+bucket+"/"+"test.png"
+        result = minio_client.put_object(bucket, "test.png", image.file, file_size, image.content_type)
+        publicUrl = "http://127.0.0.1:9000/media/"+parse.quote("test.png")
         return {"message": publicUrl}
     except InvalidResponseError as err:
         return {"message": err.message}
+
+@app.get("/images")
+def get_image_urls():
+    try:
+        objects = minio_client.list_objects(bucket, recursive=True)
+        image_urls = []
+        for obj in objects:
+            image_url = minio_client.presigned_get_object(
+                bucket, obj.object_name)
+            image_urls.append(image_url.split("?")[0].replace("minio","127.0.0.1"))
+        return {"image_urls": image_urls}
+    except InvalidResponseError as err:
+        return {"message": err.message}    
+    
+
