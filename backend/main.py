@@ -70,12 +70,13 @@ async def update_post(id: str, post: UpdatePost = Body(...)):
 
     raise HTTPException(status_code=404, detail=f"Post {id} not found")
 
-@app.delete("/{id}", response_description="Delete a post")
+@app.delete("/{id}", response_description="Post deleted", status_code=204)
 async def delete_post(id: str):
-    delete_result = await db[settings.MONGO_INITDB_DATABASE].delete_one({"_id": id})
-    print(delete_result.deleted_count)
+    result = await db[settings.MONGO_INITDB_DATABASE].delete_one({"_id": id})
 
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    print(result.deleted_count)
+
+    if result.deleted_count == 1:
+        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT)
     else:
         raise HTTPException(status_code=404, detail=f"Post {id} not found")
