@@ -33,14 +33,30 @@ services:
     container_name: api
     env_file:
       - ./.env
-    command: uvicorn main:app --host 0.0.0.0 --port 80 --reload
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     ports:
-      - 8000:80
+      - 8000:8000
     volumes:
-      - ./backend:/app
+      - ./backend:/app/
     depends_on:
       - minio
       - mongodb
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/react-docker:delegated
+      - /node_modules
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - minio
+      - mongodb
+      - backend
 
 volumes:
   mongo:

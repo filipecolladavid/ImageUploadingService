@@ -1,22 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState } from "react";
 
 function App() {
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+        {loading ? <>Loading</> : <>{text}</>}
+        <button
+          onClick={() => {
+            setLoading(!loading);
+            fetch("http://api:8000/").then((response) => {
+              let r = response.json();
+              setText(r.status);
+              setLoading(false);
+              console.log(r)
+            });
+          }}
         >
-          Learn React
-        </a>
+          Click me
+        </button>
       </header>
     </div>
   );
