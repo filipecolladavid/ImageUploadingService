@@ -1,9 +1,10 @@
 import os
 from datetime import datetime
 from typing import List
-from fastapi import Body, FastAPI, HTTPException, Response, UploadFile, status
+from fastapi import Body, FastAPI, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 from minio import InvalidResponseError
 from urllib import parse
 from .storage import bucket, minio_client
@@ -11,13 +12,22 @@ from .database import db
 from .models import Post, UpdatePost
 from .config import settings
 
+
 # Using for testing 127.0.0.1
-baseUrl = "http://127.0.0.1:9000/"
+baseUrl = "http://minio:9000/"
 # minio:9000
 
 allowed_types = ['image/png', 'image/jpeg']
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CLIENT_ORIGIN,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -29,6 +39,7 @@ def get_root():
 @app.post(
     "/upload",
     response_description="Post created successful",
+    response_model=Post,
     status_code=status.HTTP_201_CREATED,
     responses={
         400: {"descriprion": "Invalid type of file"},
@@ -103,14 +114,28 @@ async def update_post(id: str, post: UpdatePost = Body(...)):
     "/{id}",
     response_description="Post deleted",
     status_code=204,
-    responses={404: {"description": "Post not found"}}
+    responses={
+        400: {"descriprion": "Invalid type of file"},
+        500: {"description": "Internal error"}
+    }
 )
 async def delete_post(id: str):
+
+    obj = await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})
+    if not obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
+    post = jsonable_encoder(obj)
+    name = post["src"].split("/")[4]
+
+    try:
+        minio_client.remove_object(bucket, name)
+    except InvalidResponseError as err:
+        return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err.message)
+
     result = await db[settings.MONGO_INITDB_DATABASE].delete_one({"_id": id})
 
-    print(result.deleted_count)
-
     if result.deleted_count == 1:
-        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content="Post deleted with success")
+        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content="")
     else:
         raise HTTPException(status_code=404, detail=f"Post {id} not found")
