@@ -21,6 +21,7 @@ class PyObjectId(ObjectId):
 
 class Post(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    author: str = Field(...)
     title: str = Field(...)
     description: str = Field(...)
     src: str = Field(...)

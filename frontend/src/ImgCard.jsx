@@ -3,8 +3,8 @@ import { Col, Card } from "react-bootstrap";
 const ImgCard = ({ img }) => {
   return (
     <Col>
-      <Card style={{ width: "100px" }}>
-        <Card.Img variant="top" src={img.src} />
+      <Card>
+        <Card.Img variant="top" src={img.src} style={{height:"14rem"}}/>
         <Card.Body>
           <Card.Title>{img.title}</Card.Title>
           <Card.Text>

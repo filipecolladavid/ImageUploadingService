@@ -1,3 +1,17 @@
 .App-header {
   height: 20%;
 }
+
+.App {
+  margin: 20px;
+}
+
+.add-button {
+  position: fixed;
+  left: 165vh;
+  top: 90vh;
+}
+
+.add-button:hover{
+  cursor: pointer;
+}

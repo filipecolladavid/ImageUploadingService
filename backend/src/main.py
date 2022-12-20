@@ -46,7 +46,7 @@ def get_root():
         500: {"description": "Internal error"}
     },
 )
-async def upload(image: UploadFile, title: str = "Image", desc: str = "No Description Available"):
+async def upload(image: UploadFile, title: str = "Image", desc: str = "No Description Available", author: str = "Unknown"):
 
     if image.content_type not in allowed_types:
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid type of file")
@@ -63,6 +63,7 @@ async def upload(image: UploadFile, title: str = "Image", desc: str = "No Descri
 
     post = Post(
         title=title,
+        author=author,
         description=desc,
         src=publicUrl,
         date=datetime.now().strftime("%m_%d_%Y_%H_%M_%S"),

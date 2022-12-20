@@ -25,9 +25,9 @@ const Images = () => {
   return (
     loading ? <>Loading...</>
       :
-      <Row xs={1} md={2} className="g-4">
+      <Row xs={1} md={4} className="g-4">
         {imgs ? imgs.map((img) => {
-          return (<ImgCard img={img}/>)
+          return (<ImgCard img={img} />)
         }) : <>Null</>}
       </Row>
   );
