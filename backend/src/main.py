@@ -14,7 +14,7 @@ from .config import settings
 
 
 # Using for testing 127.0.0.1
-baseUrl = "http://minio:9000/"
+baseUrl = "http://0.0.0.0:9000/"
 # minio:9000
 
 allowed_types = ['image/png', 'image/jpeg']
@@ -113,7 +113,7 @@ async def update_post(id: str, post: UpdatePost = Body(...)):
 @ app.delete(
     "/{id}",
     response_description="Post deleted",
-    status_code=204,
+    status_code=status.HTTP_200_OK,
     responses={
         400: {"descriprion": "Invalid type of file"},
         500: {"description": "Internal error"}
@@ -136,6 +136,6 @@ async def delete_post(id: str):
     result = await db[settings.MONGO_INITDB_DATABASE].delete_one({"_id": id})
 
     if result.deleted_count == 1:
-        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content="")
+        return JSONResponse(status_code=status.HTTP_200_OK, content="deleted")
     else:
         raise HTTPException(status_code=404, detail=f"Post {id} not found")

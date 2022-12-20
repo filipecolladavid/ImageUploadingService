@@ -1,28 +1,3 @@
-.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  border: solid;
-  height: 85vh;
-  margin:50px
-}
-
-.right {
-  border: solid;
-  width: 60%;
-}
-
-.left {
-  border: solid;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 50%;
-  align-items: center;
-  padding: 10px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
+.App-header {
+  height: 20%;
 }
