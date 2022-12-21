@@ -7,7 +7,7 @@ import { baseUrl } from "./App";
 
 const AddImageModal = ({ show, handleClose }) => {
 
-  const [valid, setValid] = useState(true);
+  const [error, setError] = useState(null);
   const [validated, setValidated] = useState(false);
   const [submited, setSubmited] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -46,15 +46,15 @@ const AddImageModal = ({ show, handleClose }) => {
         if (response.ok) {
           return response.json();
         }
+        else if(response.status == 400) setError("Type of file is not supported");
+        else setError("Something went wrong");
         throw new Error("Something went wrong.", response);
       })
       .then((text) => {
         console.log("Request successful", text);
-        setValid(true);
         return text;
       })
       .catch((error) => {
-        setValid(false);
         console.log("Request failed", error);
       });
   }
@@ -89,9 +89,9 @@ const AddImageModal = ({ show, handleClose }) => {
           </Spinner>
           :
           (submited ?
-            (valid ?
+            (!error ?
               <>Uploaded with success<AiFillCheckCircle color="green" size={40} /></> :
-              <>Something went wrong<AiFillCloseCircle color="red" size={40} /> </>
+              <>{error}<AiFillCloseCircle color="red" size={40} /> </>
             ) :
             <UploadForm
               onFormChange={onFormChange}

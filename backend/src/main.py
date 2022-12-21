@@ -38,18 +38,18 @@ def get_root():
 # Upload a file with a title and description
 @app.post(
     "/upload",
-    response_description="Post created successful",
-    response_model=Post,
     status_code=status.HTTP_201_CREATED,
+    response_model=Post,
+    response_description="Post created successfully",
     responses={
-        400: {"descriprion": "Invalid type of file"},
-        500: {"description": "Internal error"}
+        400: {"detail": "Invalid type of file"},
+        500: {"detail": "Internal error"}
     },
 )
 async def upload(image: UploadFile, title: str = "Image", desc: str = "No Description Available", author: str = "Unknown"):
 
     if image.content_type not in allowed_types:
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid type of file")
+        return JSONResponse(status_code=400, content={"detail": "Invalid type of file"})
 
     file_size = os.fstat(image.file.fileno()).st_size
     file_name = title+datetime.now().strftime("%m%d%Y%H%M%S")+"." + \
@@ -116,7 +116,7 @@ async def update_post(id: str, post: UpdatePost = Body(...)):
     response_description="Post deleted",
     status_code=status.HTTP_200_OK,
     responses={
-        400: {"descriprion": "Invalid type of file"},
+        400: {"message": "Invalid type of file"},
         500: {"description": "Internal error"}
     }
 )
