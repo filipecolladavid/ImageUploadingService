@@ -1,9 +1,12 @@
 import "./App.css";
+
 import Images from "./Images";
-import Modal from "./Modal";
+import AddImageModal from "./AddImageModal";
+
 import { HiOutlinePlusCircle } from "react-icons/hi";
 import { Container } from "react-bootstrap";
 import { useState } from "react";
+
 export const baseUrl = "http://0.0.0.0:8000";
 
 function App() {
@@ -11,7 +14,6 @@ function App() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
   return (
     <div className="App">
       <header className="App-header">
@@ -19,11 +21,11 @@ function App() {
       </header>
       <Container>
         <Images />
-        <div className="add-button" onClick={handleShow}>
-          <HiOutlinePlusCircle size={50}/>
+        <div className="add-button">
+          <HiOutlinePlusCircle size={50} onClick={handleShow} />
         </div>
       </Container>
-      {/* <Modal show={show} handleClose={handleClose} /> */}
+      {show && <AddImageModal show={show} handleClose={handleClose} />}
     </div>
   );
 }

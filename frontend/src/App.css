@@ -1,15 +1,16 @@
 .App-header {
-  height: 20%;
+  height: 10vh;
+  padding: 1%;
 }
 
-.App {
-  margin: 20px;
+.container {
+  height: 90vh;
 }
 
 .add-button {
   position: fixed;
-  left: 165vh;
-  top: 90vh;
+  left: 2.5%;
+  bottom: 2.5%;
 }
 
 .add-button:hover{
