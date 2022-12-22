@@ -22,7 +22,7 @@ const AddImageModal = ({ show, handleClose }) => {
     setValues({ ...values, [name]: value });
   };
 
-  const fetchData = async () => {
+  const postData = async () => {
 
     let formData = new FormData();
     formData.append("image", uploadFile);
@@ -42,21 +42,22 @@ const AddImageModal = ({ show, handleClose }) => {
         body: formData,
       }
     )
-      .then((response) => {
+      .then(response => {
         if (response.ok) {
           return response.json();
         }
-        else if(response.status == 400) setError("Type of file is not supported");
+        else if (response.status === 400) setError("Type of file is not supported");
         else setError("Something went wrong");
         throw new Error("Something went wrong.", response);
       })
-      .then((text) => {
+      .then(text => {
         console.log("Request successful", text);
         return text;
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("Request failed", error);
       });
+      console.log(response);
   }
 
 
@@ -71,7 +72,7 @@ const AddImageModal = ({ show, handleClose }) => {
     else {
       setLoading(true);
       setSubmited(true);
-      await fetchData();
+      await postData();
       setLoading(false);
     }
     setValidated(true);

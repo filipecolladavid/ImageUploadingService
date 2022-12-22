@@ -46,6 +46,23 @@ def get_root():
         500: {"detail": "Internal error"}
     },
 )
+# Get a post by id
+@ app.get(
+    "/get/{id}",
+    response_description="Get post by id",
+    response_model=Post,
+    status_code=status.HTTP_200_OK,
+    responses={
+        404: {"detail": "Post not found"}
+    }
+)
+async def get_post(id: str):
+    res = await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})
+    if not res:
+        return JSONResponse(status_code=404, content={"detail": "Post not found"})
+    return res
+
+
 async def upload(image: UploadFile, title: str = "Image", desc: str = "No Description Available", author: str = "Unknown"):
 
     if image.content_type not in allowed_types:
@@ -82,14 +99,15 @@ async def get_image_urls():
     posts = await db[settings.MONGO_INITDB_DATABASE].find().to_list(1000)
     return posts
 
-
 # Update an image based on an ID
+
+
 @ app.put(
-    "/{id}",
+    "/update/{id}",
     response_description="Post updated",
     response_model=Post, status_code=status.HTTP_202_ACCEPTED,
     responses={
-        404: {"description": "Post not found"}
+        404: {"detail": "Post not found"}
     }
 )
 async def update_post(id: str, post: UpdatePost = Body(...)):
