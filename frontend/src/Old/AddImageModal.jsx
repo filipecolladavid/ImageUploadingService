@@ -1,9 +1,10 @@
 import UploadForm from "./UploadForm";
+import ResponseValidation from "./ResponseValidation";
+
+import { baseUrl } from "./App1";
 
 import { useState, useRef } from "react";
 import { Modal, Spinner } from "react-bootstrap";
-import { AiFillCloseCircle, AiFillCheckCircle } from "react-icons/ai"
-import { baseUrl } from "./App";
 
 const AddImageModal = ({ show, handleClose }) => {
 
@@ -28,7 +29,7 @@ const AddImageModal = ({ show, handleClose }) => {
     formData.append("image", uploadFile);
 
     const response = await fetch(
-      baseUrl + "/upload?" + new URLSearchParams({
+      baseUrl + "upload?" + new URLSearchParams({
         title: values["title"],
         desc: values["desc"],
         author: values["author"]
@@ -57,7 +58,7 @@ const AddImageModal = ({ show, handleClose }) => {
       .catch(error => {
         console.log("Request failed", error);
       });
-      console.log(response);
+    console.log(response);
   }
 
 
@@ -90,10 +91,7 @@ const AddImageModal = ({ show, handleClose }) => {
           </Spinner>
           :
           (submited ?
-            (!error ?
-              <>Uploaded with success<AiFillCheckCircle color="green" size={40} /></> :
-              <>{error}<AiFillCloseCircle color="red" size={40} /> </>
-            ) :
+            <ResponseValidation error={error} type={"Uploaded"} /> :
             <UploadForm
               onFormChange={onFormChange}
               handleSubmit={handleSubmit}
