@@ -6,6 +6,7 @@ import ImageModal from "./ImageModal";
 
 import { HiOutlinePlusCircle } from "react-icons/hi";
 import { useEffect, useState } from "react";
+import { Container } from "react-bootstrap";
 
 export const baseUrl = "http://0.0.0.0:8000/";
 
@@ -23,6 +24,7 @@ function App() {
   const [selected, setSelected] = useState(null);
   const handleSelect = (id) => {
     setSelected(id);
+    handleOpenImg();
   }
   const [showImg, setShowImg] = useState(false);
   const handleOpenImg = () => {
@@ -34,31 +36,34 @@ function App() {
   }
 
   useEffect(() => {
-    if (selected) {
-      setShowImg(true);
-    }
-    else setShowImg(false);
+    console.log(selected);
+    if (selected) handleOpenImg()
+    else handleCloseImg();
   }, [selected])
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Image Uploading WebApp</h1>
-      </header>
-      <ImageList handleSelect={handleSelect} />
-      <div className="add-button">
-        <HiOutlinePlusCircle size={50} onClick={handleOpenForm} />
-      </div>
+    <>
+      <Container>
+        <header className="App-header">
+          <h1>Image Uploading WebApp</h1>
+        </header>
+        <ImageList handleSelect={handleSelect} />
+        <div className="add-button">
+          <HiOutlinePlusCircle size={50} onClick={handleOpenForm} />
+        </div>
+      </Container>
 
-      {showForm &&
+      {
+        showForm &&
         <ImageUploadForm
           show={showForm}
           handleClose={handleCloseForm}
+          id={selected}
         />
       }
-      {showImg && <ImageModal show={showImg} handleClose={handleCloseImg} selected={selected} />}
+      {showImg && <ImageModal show={showImg} handleClose={handleCloseImg} id={selected} />}
 
-    </div>
+    </>
   );
 }
 

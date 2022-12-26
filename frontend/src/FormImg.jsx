@@ -43,9 +43,7 @@ const FormImg = ({ }) => {
       }
     )
       .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
+        if (response.ok) return response.json();
         else if (response.status === 400) setError("Type of file is not supported");
         else setError("Something went wrong");
         throw new Error("Something went wrong.", response);
@@ -57,7 +55,6 @@ const FormImg = ({ }) => {
       .catch(error => {
         console.log("Request failed", error);
       });
-    console.log(response);
   }
 
   const handleSubmit = async (event) => {
@@ -83,7 +80,7 @@ const FormImg = ({ }) => {
     </Spinner>
   )
 
-  else if (submited) return <Response error={error} obj={"Post"} action={"uploaded"}/>
+  else if (submited) return <Response error={error} obj={"Post"} action={"uploaded"} />
 
   else
     return (

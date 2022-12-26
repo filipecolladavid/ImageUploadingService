@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from typing import List
-from fastapi import Body, FastAPI, HTTPException, UploadFile, status
+from fastapi import Body, FastAPI, UploadFile, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
@@ -46,23 +46,6 @@ def get_root():
         500: {"detail": "Internal error"}
     },
 )
-# Get a post by id
-@ app.get(
-    "/get/{id}",
-    response_description="Get post by id",
-    response_model=Post,
-    status_code=status.HTTP_200_OK,
-    responses={
-        404: {"detail": "Post not found"}
-    }
-)
-async def get_post(id: str):
-    res = await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})
-    if not res:
-        return JSONResponse(status_code=404, content={"detail": "Post not found"})
-    return res
-
-
 async def upload(image: UploadFile, title: str = "Image", desc: str = "No Description Available", author: str = "Unknown"):
 
     if image.content_type not in allowed_types:
@@ -76,7 +59,7 @@ async def upload(image: UploadFile, title: str = "Image", desc: str = "No Descri
             bucket, file_name, image.file, file_size, image.content_type)
         publicUrl = baseUrl+bucket+"/"+parse.quote(file_name)
     except InvalidResponseError as err:
-        return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err.message)
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=err.message)
 
     post = Post(
         title=title,
@@ -93,17 +76,26 @@ async def upload(image: UploadFile, title: str = "Image", desc: str = "No Descri
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_post)
 
 
-# Get a list of all the images
-@ app.get("/images", response_description="List all images", response_model=List[Post])
-async def get_image_urls():
-    posts = await db[settings.MONGO_INITDB_DATABASE].find().to_list(1000)
-    return posts
+# Get a post by id
+@app.get(
+    "/post/{id}",
+    response_description="Get post by id",
+    response_model=Post,
+    status_code=status.HTTP_200_OK,
+    responses={
+        404: {"detail": "Post not found"}
+    }
+)
+async def get_post(id: str):
+    res = await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})
+    if not res:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Post not found"})
+    return res
+
 
 # Update an image based on an ID
-
-
-@ app.put(
-    "/update/{id}",
+@app.put(
+    "/post/{id}",
     response_description="Post updated",
     response_model=Post, status_code=status.HTTP_202_ACCEPTED,
     responses={
@@ -125,36 +117,45 @@ async def update_post(id: str, post: UpdatePost = Body(...)):
     if (existing_post := await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})) is not None:
         return existing_post
 
-    raise HTTPException(status_code=404, detail=f"Post {id} not found")
+    raise JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                       content=f"Post {id} not found")
 
 
 # Delete an image, given its ID
-@ app.delete(
-    "/{id}",
+@app.delete(
+    "/post/{id}",
     response_description="Post deleted",
     status_code=status.HTTP_200_OK,
     responses={
-        400: {"message": "Invalid type of file"},
-        500: {"description": "Internal error"}
+        400: {"detail": "Invalid type of file"},
+        404: {"detail": "Post not found"},
+        500: {"detail": "Internal error"}
     }
 )
 async def delete_post(id: str):
 
     obj = await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})
     if not obj:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
+        raise JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND, content=err.message)
     post = jsonable_encoder(obj)
     name = post["src"].split("/")[4]
 
     try:
         minio_client.remove_object(bucket, name)
     except InvalidResponseError as err:
-        return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=err.message)
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=err.message)
 
     result = await db[settings.MONGO_INITDB_DATABASE].delete_one({"_id": id})
 
     if result.deleted_count == 1:
         return JSONResponse(status_code=status.HTTP_200_OK, content="deleted")
     else:
-        raise HTTPException(status_code=404, detail=f"Post {id} not found")
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=f"Post {id} not found")
+
+
+# Get a list of all the images
+@app.get("/images", response_description="List all images", response_model=List[Post])
+async def get_image_urls():
+    posts = await db[settings.MONGO_INITDB_DATABASE].find().to_list(1000)
+    return posts
