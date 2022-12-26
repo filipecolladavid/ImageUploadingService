@@ -1,22 +1,54 @@
-import Response from "./Response";
+import { useState } from "react";
+import { Button, Modal } from "react-bootstrap";
 
-import { useState, useEffect } from "react";
-import { Modal } from "react-bootstrap";
-
-import { baseUrl } from "./App";
 import ImageFetch from "./ImageFetch";
+import Delete from "./Delete";
+import Update from "./Update"
 
 const ImageModal = ({ show, handleClose, id }) => {
+
+  const [update, setUpdate] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Add an Image</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <ImageFetch id={id} />
+        {
+          update ?
+            <Update
+              id={id}
+              image={image}
+              setImage={setImage}
+              error={error}
+              setError={setError}
+              loading={loading}
+              setLoading={setLoading}
+              setUpdate={setUpdate}
+            />
+            :
+            <ImageFetch
+              id={id}
+              image={image}
+              setImage={setImage}
+              error={error}
+              setError={setError}
+              loading={loading}
+              setLoading={setLoading}
+            />
+        }
       </Modal.Body>
-    </Modal>
+      {!error && !loading && !deleted && !update &&
+        <Modal.Footer>
+          <Delete id={id} setError={setError} error={error} setLoading={setLoading} setDeleted={setDeleted} />
+          <Button variant="warning" onClick={() => setUpdate(true)}>Update</Button>
+        </Modal.Footer>
+      }
+    </Modal >
   );
 }
 

@@ -27,7 +27,7 @@ const FormImg = ({ }) => {
     let formData = new FormData();
     formData.append("image", uploadFile);
 
-    const response = await fetch(
+    await fetch(
       baseUrl + "upload?" + new URLSearchParams({
         title: values["title"],
         desc: values["desc"],
@@ -44,9 +44,7 @@ const FormImg = ({ }) => {
     )
       .then(response => {
         if (response.ok) return response.json();
-        else if (response.status === 400) setError("Type of file is not supported");
-        else setError("Something went wrong");
-        throw new Error("Something went wrong.", response);
+          else throw new Error(response.statusText);
       })
       .then(text => {
         console.log("Request successful", text);
@@ -54,6 +52,7 @@ const FormImg = ({ }) => {
       })
       .catch(error => {
         console.log("Request failed", error);
+        setError(error);
       });
   }
 

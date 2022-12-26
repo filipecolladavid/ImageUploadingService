@@ -14,22 +14,24 @@ function ImageList({ handleSelect }) {
   useEffect(() => {
     let cancelled = false;
 
-    const fetchImages = async () => {
-      try {
-        const response = await fetch(baseUrl + 'images');
-        const data = await response.json();
-        if (!cancelled) {
-          setImages(data);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setError(error);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
+    const fetchImages = () => {
+      fetch(baseUrl + 'images')
+        .then(response => response.json())
+        .then(data => {
+          if (!cancelled) {
+            setImages(data);
+          }
+        })
+        .catch(error => {
+          if (!cancelled) {
+            setError(error);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setLoading(false);
+          }
+        });
     };
     fetchImages();
 

@@ -52,7 +52,7 @@ async def upload(image: UploadFile, title: str = "Image", desc: str = "No Descri
         return JSONResponse(status_code=400, content={"detail": "Invalid type of file"})
 
     file_size = os.fstat(image.file.fileno()).st_size
-    file_name = title+datetime.now().strftime("%m%d%Y%H%M%S")+"." + \
+    file_name = title.replace(" ", "_")+datetime.now().strftime("%m%d%Y%H%M%S")+"." + \
         image.content_type.split("/")[1]
     try:
         minio_client.put_object(
@@ -136,13 +136,14 @@ async def delete_post(id: str):
 
     obj = await db[settings.MONGO_INITDB_DATABASE].find_one({"_id": id})
     if not obj:
-        raise JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND, content=err.message)
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=f"Post {id} not found")
     post = jsonable_encoder(obj)
     name = post["src"].split("/")[4]
+    print(name)
 
     try:
-        minio_client.remove_object(bucket, name)
+       res = minio_client.remove_object(bucket, name)
+       print(res)
     except InvalidResponseError as err:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=err.message)
 
