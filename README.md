@@ -60,7 +60,7 @@ Once Docker created the containers you can access:
 
 **MinIO Console:**
 ```bash
-http://localhost:9001/
+http://localhost:9001
 ```
 
 
