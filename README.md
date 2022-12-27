@@ -27,18 +27,18 @@ and [React Icons](https://react-icons.github.io/react-icons)
 To run this project, you will need to install docker and create an .env file.
 Save .env file in the root directory of the project with the following environment variables 
 
-`MONGO_INITDB_ROOT_USERNAME=admin`__
-`MONGO_INITDB_ROOT_PASSWORD=password123`__
-`MONGO_INITDB_DATABASE=images`__
-__
-`DATABASE_URL=mongodb://admin:password123@mongodb:27017/images?authSource=admin&retryWrites=true&w=majority`__
-__
-`CLIENT_ORIGIN=http://localhost:3000`__
-__
-`MINIO_URL=minio:9000`__
-`MINIO_ACCESS_KEY=minio`__
-`MINIO_SECRET_KEY=minio123`__
-`MINIO_SECURE=False`__
+`MONGO_INITDB_ROOT_USERNAME=admin`. 
+`MONGO_INITDB_ROOT_PASSWORD=password123`. 
+`MONGO_INITDB_DATABASE=images`. 
+
+`DATABASE_URL=mongodb://admin:password123@mongodb:27017/images?authSource=admin&retryWrites=true&w=majority`. 
+
+`CLIENT_ORIGIN=http://localhost:3000`. 
+
+`MINIO_URL=minio:9000`. 
+`MINIO_ACCESS_KEY=minio`. 
+`MINIO_SECRET_KEY=minio123`.
+`MINIO_SECURE=False`.
 
 To start the webapp run the following command in the root directory of the project:
 
@@ -68,4 +68,5 @@ http://localhost:9001/
 
 - Unit Testing
 - Styling
+- Document code better
 
