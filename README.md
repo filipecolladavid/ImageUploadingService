@@ -55,7 +55,7 @@ Once Docker created the containers you can access:
 
 **Backend Docs:**
 ```bash
-  localhost:8000
+  localhost:8000/docs
 ```
 
 **MinIO Console:**
