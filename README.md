@@ -27,11 +27,11 @@ and [React Icons](https://react-icons.github.io/react-icons)
 To run this project, you will need to install docker and create an .env file.
 Save .env file in the root directory of the project with the following environment variables 
 
-`MONGO_INITDB_ROOT_USERNAME=admin`   
-`MONGO_INITDB_ROOT_PASSWORD=password123`   
-`MONGO_INITDB_DATABASE=images`   
+`MONGO_INITDB_ROOT_USERNAME=user`   
+`MONGO_INITDB_ROOT_PASSWORD=password`   
+`MONGO_INITDB_DATABASE=namedatabase`   
 
-`DATABASE_URL=mongodb://admin:password123@mongodb:27017/images?authSource=admin&retryWrites=true&w=majority`   
+`DATABASE_URL=mongodb://user:password@mongodb:27017/namedatabase?authSource=admin&retryWrites=true&w=majority`   
 
 `CLIENT_ORIGIN=http://localhost:3000`   
 
