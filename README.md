@@ -1,58 +1,70 @@
-# User Management and Image Upload API
+# Image Uploading/Sharing WebApp
 
-This is starter project for a social media API developed with [FastAPI](https://fastapi.tiangolo.com/), [MongoDB](https://www.mongodb.com/) and [MinIO](https://min.io/). It provides functionalities such as user registration, user authentication and authorization, creating and updating posts, and changing user settings. The API also implements token-based authentication using OAuth2 for security. The API is developed using the RESTful architectural style and is designed to be scalable, performant, and easy to use. The project serves as a template for developers looking to create social media like applications using FastAPI and MongoDB.
-
-
-
-
-## Environment Variables
-
-To run this project, you will need to add the following environment variables to your .env file
-
-MongoDB
-
-`MONGO_INITDB_ROOT_USERNAME`
-
-`MONGO_INITDB_ROOT_PASSWORD`
-
-`MONGO_INITDB_DATABASE`
-
-`DATABASE_URL`
+This project is a simple example of an fullstack application 
+for uploading, storing and sharing images. 
 
 
-JWT
 
-`ACCESS_TOKEN_EXPIRES_IN`
+## Technologies used
 
-`REFRESH_TOKEN_EXPIRES_IN`
+**Frontend:** 
+[React](https://reactjs.org/),
+[React Bootstrap](https://react-bootstrap.github.io/)
+and [React Icons](https://react-icons.github.io/react-icons)
 
-`JWT_ALGORITHM`
+**Backend:** [FastAPI](https://fastapi.tiangolo.com/)
 
-`JWT_PRIVATE_KEY` 
+**Database:** [MongoDB](https://www.mongodb.com/)
 
-`JWT_PUBLIC_KEY`
-## Usage
+**Storage:** [MinIO](https://min.io/)
+
+
+
+
+## Deployment
+
+To run this project, you will need to install docker and create an .env file.
+Save .env file in the root directory of the project with the following environment variables 
+
+`MONGO_INITDB_ROOT_USERNAME=user`   
+`MONGO_INITDB_ROOT_PASSWORD=password`   
+`MONGO_INITDB_DATABASE=namedatabase`   
+
+`DATABASE_URL=mongodb://user:password@mongodb:27017/namedatabase?authSource=admin&retryWrites=true&w=majority`   
+
+`CLIENT_ORIGIN=http://localhost:3000`   
+
+`MINIO_URL=minio:9000`   
+`MINIO_ACCESS_KEY=minio`   
+`MINIO_SECRET_KEY=minio123`  
+`MINIO_SECURE=False`
+
+To start the webapp run the following command in the root directory of the project:
 
 ```bash
-  docker-compose up
+  docker-compose up -d --build
 ```
 
-And start development - backend has auto-reload enabled in the docker-container
-## Running Tests
+Once Docker created the containers you can access:
 
-To run tests, the database must be empty. Go to the ```backend/src/tests``` directory and run the following command:
-
+**Frontend:** 
 ```bash
-  pytest
-```
-or
+  localhost:3000
+````
+
+**Backend Docs:**
 ```bash
-  pytest -v 
+  localhost:8000/docs
 ```
-for a more detailed view of each individual test
 
-## Roadmap
+**MinIO Console:**
+```bash
+http://localhost:9001
+```
 
-- Add endpoints to retreive users it's own posts
-- Improve MinIO storage organization
 
+## TODOs
+
+- Unit Testing
+- Styling
+- Document code better
